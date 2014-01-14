@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# Version 1.0
+
+CACHE:
+index.html
+css/foundation.min.css
+js/modernizr.js
+js/jquery.js
+js/foundation.min.js
+
+NETWORK:
+
+FALLBACK:
