@@ -56,6 +56,39 @@
 			.otherwise({ redirectTo: '/' });
 	}]);
 
+	/********************************************************************
+   *
+   *                        Utility Functions
+   *
+   ********************************************************************/
+  
+  // Shim for requestAnimationFrame from Paul Irishpaul ir
+  // http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/ 
+  window.requestAnimFrame = (function(){
+    return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            function( callback ){
+              window.setTimeout(callback, 1000 / 60);
+            };
+  })();
+
+  var pointerDownName = 'MSPointerDown';
+  var pointerUpName = 'MSPointerUp';
+  var pointerMoveName = 'MSPointerMove';
+
+  if(window.PointerEvent) {
+    pointerDownName = 'pointerdown';
+    pointerUpName = 'pointerup';
+    pointerMoveName = 'pointermove';
+  }
+    
+  // Simple way to check if some form of pointerevents is enabled or not
+  window.PointerEventsSupport = false;
+  if(window.PointerEvent || window.navigator.msPointerEnabled) {
+    window.PointerEventsSupport = true;
+  }
+
   /********************************************************************
    *
    *                            Controllers
@@ -63,38 +96,6 @@
    ********************************************************************/
   
   app.controller('InitializeController', [function (){
-		$(document).foundation();
-		var swipeFrontElement = document.getElementById('swipe');
-
-		console.log('swipe elem', swipeFrontElement);
-		
-		
-    // Shim for requestAnimationFrame from Paul Irishpaul ir
-    // http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/ 
-    window.requestAnimFrame = (function(){
-      return  window.requestAnimationFrame       ||
-              window.webkitRequestAnimationFrame ||
-              window.mozRequestAnimationFrame    ||
-              function( callback ){
-                window.setTimeout(callback, 1000 / 60);
-              };
-    })();
-
-    var pointerDownName = 'MSPointerDown';
-    var pointerUpName = 'MSPointerUp';
-    var pointerMoveName = 'MSPointerMove';
-
-    if(window.PointerEvent) {
-      pointerDownName = 'pointerdown';
-      pointerUpName = 'pointerup';
-      pointerMoveName = 'pointermove';
-    }
-      
-    // Simple way to check if some form of pointerevents is enabled or not
-    window.PointerEventsSupport = false;
-    if(window.PointerEvent || window.navigator.msPointerEnabled) {
-      window.PointerEventsSupport = true;
-    }
       
 		function SwipeRevealItem(element) {
 	    // Gloabl state variables
@@ -114,6 +115,7 @@
 	    // Perform client width here as this can be expensive and doens't 
 	    // change until window.onresize
 	    var itemWidth = swipeFrontElement.clientWidth;
+	    console.log('itemWidth', itemWidth);
 	    var slopValue = itemWidth * (1/4);
 
 	    // On resize, change the slop value
@@ -235,15 +237,16 @@
 	          currentXPosition = 0;
 	          break;
 	        case STATE_LEFT_SIDE:
-	          currentXPosition = -(itemWidth - handleSize);
+	          currentXPosition = -(itemWidth/3) - 1;
 	          break;
 	        case STATE_RIGHT_SIDE:
-	          currentXPosition = itemWidth - handleSize;
+	          currentXPosition = itemWidth/3 + 1;
 	          break;
 	      }
 	      
 	      transformStyle = 'translateX('+currentXPosition+'px)';
-	      
+	      console.log('currentXPosition', currentXPosition);
+
 	      swipeFrontElement.style.msTransform = transformStyle;
 	      swipeFrontElement.style.MozTransform = transformStyle;
 	      swipeFrontElement.style.webkitTransform = transformStyle;
@@ -332,9 +335,6 @@
         isCompleted[sampleName] = true;
       }
     }
-
-    
-
 	}]);
   
   /********************************************************************
